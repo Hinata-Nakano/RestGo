@@ -21,9 +21,6 @@ jobs:
           go-version: '1.22.2'
           cache: false
       
-      - name: CD src
-        run: cd src && echo "ここまでOK"
-
       - name: Run go fmt
-
+        working-directory: src
         run: go fmt 
