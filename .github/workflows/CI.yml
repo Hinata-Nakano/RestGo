@@ -26,4 +26,4 @@ jobs:
 
       - name: Run go fmt
 
-        run: go fmt ./...
+        run: go fmt 
