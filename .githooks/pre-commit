@@ -1,6 +1,6 @@
 #!/bin/sh
 # Pre-commit hook to run gofmt on Go files
-
+echo "pre-commit hookの実行を開始します"
 files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$')
 
 if [ -n "$files" ]; then
