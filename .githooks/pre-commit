@@ -1,20 +1,108 @@
 #!/bin/sh
-# Pre-commit hook to run gofmt on Go files
-echo "pre-commit hookの実行を開始します"
-files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$')
+# Pre-commit hook for Go files
+# Runs gofmt and go vet checks
 
-if [ -n "$files" ]; then
-    unformatted=$(echo "$files" | xargs gofmt -l)
+# エラーフラグ
+HAS_ERRORS=0
+
+# ステージングされたGoファイルを取得
+get_staged_go_files() {
+    git diff --cached --name-only --diff-filter=ACM | grep '\.go$' || true
+}
+
+# gofmtチェックと自動修正
+check_gofmt() {
+    local files="$1"
+    
+    if [ -z "$files" ]; then
+        return 0
+    fi
+    
+    echo "🔍 gofmtチェック中..."
+    local unformatted=$(echo "$files" | xargs gofmt -l 2>/dev/null || true)
     
     if [ -n "$unformatted" ]; then
-        echo "以下のファイルがgofmtのフォーマットに準拠していませんでした:"
+        echo "以下のファイルがフォーマットされていません:"
         echo "$unformatted"
         echo ""
-        gofmt -w $unformatted
-        git add $unformatted
-        echo "フォーマットが完了したので再度commitしてください"
+        
+        # 自動修正
+        echo "$unformatted" | xargs gofmt -w
+        echo "$unformatted" | xargs git add
+        echo "✓ フォーマットを自動修正しました"
+        echo "再度addしてcommitしてください"
+        HAS_ERRORS=1
+        return 1
+    fi
+    
+    echo "✓ gofmtチェック完了"
+    return 0
+}
+
+# go vetチェック
+check_govet() {
+    local files="$1"
+    
+    if [ -z "$files" ]; then
+        return 0
+    fi
+    
+    echo "🔍 go vetチェック中..."
+    
+    # 変更されたファイルを含むパッケージを取得
+    local packages=$(echo "$files" | sed 's|/[^/]*$||' | sort -u | sed 's|^|./|')
+    
+    for pkg in $packages; do
+        if [ -d "$pkg" ]; then
+            # パッケージディレクトリに移動してgo vetを実行（go.modを見つけるため）
+            local vet_output
+            if ! vet_output=$(cd "$pkg" && go vet . 2>&1); then
+                echo "✗ go vetで問題が見つかりました: $pkg"
+                echo "$vet_output"
+                HAS_ERRORS=1
+            fi
+        fi
+    done
+    
+    if [ $HAS_ERRORS -eq 0 ]; then
+        echo "✓ go vetチェック完了"
+    fi
+    
+    return $HAS_ERRORS
+}
+
+# メイン処理
+main() {
+    local files=$(get_staged_go_files)
+    
+    if [ -z "$files" ]; then
+        echo "Goファイルの変更はありません"
+        exit 0
+    fi
+    
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Pre-commit checks for Go files"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    
+    # gofmtチェック（自動修正あり）
+    check_gofmt "$files"
+    local fmt_result=$?
+    
+    # go vetチェック（エラー時は中断しない）
+    check_govet "$files"
+    local vet_result=$?
+    
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    if [ $fmt_result -ne 0 ] || [ $vet_result -ne 0 ]; then
+        echo "✗ Pre-commitチェックに失敗しました"
         exit 1
     fi
-fi
+    
+    echo "✓ すべてのチェックをパスしました"
+    exit 0
+}
 
-exit 0
+main
