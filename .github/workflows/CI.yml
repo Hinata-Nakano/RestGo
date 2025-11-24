@@ -1,7 +1,7 @@
-name: Go Format
+name: Go Format and lint
 
 on:
-  push:
+  pull_request:
     paths:
       - "**.go"
 
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 全履歴を取得（diffのために必要）
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -30,3 +32,43 @@ jobs:
           else 
             echo "すべてのファイルがフォーマットされています"
           fi 
+      - name: Check go vet
+        run: |
+          # PRで変更されたGoファイルを取得
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.sha }}"
+          
+          # 変更されたGoファイルのリストを取得
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACM "$BASE_SHA" "$HEAD_SHA" | grep '\.go$' || true)
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "変更されたGoファイルはありません"
+            exit 0
+          fi
+          
+          echo "変更されたGoファイル:"
+          echo "$CHANGED_FILES"
+          echo ""
+          
+          # 各ファイルに対してgo vetを実行
+          HAS_ERROR=0
+          for file in $CHANGED_FILES; do
+            echo "🔍 Checking $file..."
+            if [ -f "$file" ]; then
+              # ファイルが存在する場合、そのファイルを含むパッケージディレクトリに移動してgo vetを実行
+              pkg_dir=$(dirname "$file")
+              if ! (cd "$pkg_dir" && go vet "./$(basename "$file")" 2>&1); then
+                echo "✗ go vetで問題が見つかりました: $file"
+                HAS_ERROR=1
+              fi
+            fi
+          done
+          
+          if [ $HAS_ERROR -ne 0 ]; then
+            echo ""
+            echo "✗ go vetチェックに失敗しました"
+            exit 1
+          fi
+          
+          echo ""
+          echo "✓ すべてのファイルのgo vetチェックをパスしました" 
