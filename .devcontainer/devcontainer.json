@@ -1,0 +1,18 @@
+{
+    "name": "Go Development",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "golang.go"
+        ],
+        "settings": {
+          "go.gopath": "/workspace",
+          "go.goroot": "/usr/local/go"
+        }
+      }
+    },
+    "postCreateCommand": "cd /workspace/src && go mod download"
+  }
