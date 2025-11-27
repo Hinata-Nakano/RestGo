@@ -1,17 +1,25 @@
 {
-    "name": "Go Development",
+    "name": "Rest Go",
     "dockerComposeFile": "../docker-compose.yml",
-    "service": "dev",
+    "service": "app",
     "workspaceFolder": "/workspace",
+    "forwardPorts": [3000],
     "customizations": {
       "vscode": {
         "extensions": [
-          "golang.go"
+          "golang.go",
+          "yzhang.markdown-all-in-one"
         ],
         "settings": {
-          "go.gopath": "/workspace",
-          "go.goroot": "/usr/local/go"
+          "files.autoSave": "afterDelay",
+          "files.exclude": {
+          "**/.git": false,
+          "**/.svn": false,
+          "**/.hg": false,
+          "**/.DS_Store": false,
+          "**/Thumbs.db": false
         }
+      }
       }
     },
     "postCreateCommand": "cd /workspace/src && go mod download"
