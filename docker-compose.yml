@@ -1,0 +1,13 @@
+services:
+    app:
+        build: . 
+        image: rest-go
+        volumes:
+            - .:/app
+        ports:
+            - "3000:3000"
+        #command: go run main.go はHTTPリクエストをリッスンしたくなったら書く
+        command: sleep infinity
+
+
+    
