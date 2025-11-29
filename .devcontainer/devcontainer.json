@@ -2,7 +2,7 @@
     "name": "Rest Go",
     "dockerComposeFile": "../docker-compose.yml",
     "service": "app",
-    "workspaceFolder": "/workspace",
+    "workspaceFolder": "/app",
     "forwardPorts": [3000],
     "customizations": {
       "vscode": {
@@ -22,5 +22,5 @@
       }
       }
     },
-    "postCreateCommand": "cd /workspace/src && go mod download"
+    "postCreateCommand": "cd /app/src && go mod download"
   }
