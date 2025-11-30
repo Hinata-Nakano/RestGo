@@ -1,10 +1,6 @@
 # RestGo
 
 # How to setup
-
-  ## 開発環境の統一
-    1. vscodeでDev Containersをダウンロードする
-    2. Reopen in containerを選択し、RestCRUDフォルダを開く
   ## githooksの設定
     1. Setting up Git Hooks
    
@@ -13,3 +9,7 @@
       $ chmod +x setup.sh 
       $ ./setup.sh
   ```
+
+  ## 開発環境の統一
+    1. vscodeでDev Containersをダウンロードする
+    2. Reopen in containerを選択し、RestCRUDフォルダを開く
