@@ -4,6 +4,7 @@ services:
         image: rest-go
         volumes:
             - .:/app
+            - ${gitKeyLoc}:/root/.ssh/id_rsa_git
         ports:
             - "3000:3000"
         #command: go run main.go はHTTPリクエストをリッスンしたくなったら書く
