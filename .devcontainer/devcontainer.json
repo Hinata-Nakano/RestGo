@@ -8,7 +8,8 @@
       "vscode": {
         "extensions": [
           "golang.go",
-          "yzhang.markdown-all-in-one"
+          "yzhang.markdown-all-in-one",
+          "ms-azuretools.vscode-docker"
         ],
         "settings": {
           "files.autoSave": "afterDelay",
@@ -22,5 +23,5 @@
       }
       }
     },
-    "postCreateCommand": "cd /app/src && go mod download"
+    "postCreateCommand": "bash .devcontainer/setup.sh"
   }
