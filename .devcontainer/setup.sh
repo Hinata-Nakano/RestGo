@@ -1,5 +1,15 @@
 #!/bin/bash
 set -e
+# bash-completionのインストール(単に補完を使いたかっただけ)
+sudo apt update && sudo apt install bash-completion
+echo '. /usr/share/bash-completion/completions/git' >> ~/.bashrc
+
+# ロケールをUTF-8に設定
+echo 'export LANG=C.UTF-8' >> ~/.bashrc
+echo 'export LC_ALL=C.UTF-8' >> ~/.bashrc
+
+# bashrcを読み込み
+source ~/.bashrc
 
 # Git設定
 echo "Setting up Git configuration..."
