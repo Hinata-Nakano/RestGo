@@ -1,8 +1,8 @@
 package tweet
 
-type Tweet struct {
+type TweetEntity struct {
 	ID        string `json:"id"`
-	Title     string `json:"title"`
+	UserID    string `json:"user_id"`
 	Content   string `json:"content"`
 	CreatedAt string `json:"created_at"`
 }
