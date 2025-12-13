@@ -21,18 +21,18 @@ type CreateTweetRequest struct {
 
 // NewTweet は新しいTweetエンティティを作成する
 // バリデーションを通過した有効なエンティティのみを返す
-func NewTweet(userID, content string, clock domain.Clock) (Tweet, error) {
-	if userID == "" {
+func NewTweet(createTweetRequest CreateTweetRequest, clock domain.Clock) (Tweet, error) {
+	if createTweetRequest.UserID == "" {
 		return Tweet{}, domain.ErrUserIDRequired
 	}
-	if content == "" {
+	if createTweetRequest.Content == "" {
 		return Tweet{}, domain.ErrContentRequired
 	}
 
 	return Tweet{
 		ID:        uuid.New().String(),
-		UserID:    userID,
-		Content:   content,
+		UserID:    createTweetRequest.UserID,
+		Content:   createTweetRequest.Content,
 		CreatedAt: clock.Now().Format(time.RFC3339),
 	}, nil
 }
