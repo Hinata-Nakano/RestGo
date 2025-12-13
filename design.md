@@ -41,3 +41,11 @@ src/
 │   └── validation.go
 │
 └── main.go                   # エントリーポイント
+
+Presentation層
+    ↓ (依存)
+Application層
+    ↓ (依存)
+Domain層
+    ↑ (インターフェースに依存)
+Infrastructure層

@@ -1,5 +1,5 @@
 package tweet
 
-type ITweetRepository interface {
-	CreateTweet(tweetEntity TweetEntity) (TweetEntity, error)
+type TweetRepository interface {
+	Create(tweet Tweet) (Tweet, error)
 }
