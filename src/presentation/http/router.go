@@ -7,7 +7,7 @@ func SetupRouter(tweetHandler *TweetHandler) *gin.Engine {
 	router := gin.Default()
 
 	// API v1
-	api := router.Group("/api/v1")
+	api := router.Group("/api")
 	{
 		api.POST("/tweets", tweetHandler.CreateTweet)
 	}

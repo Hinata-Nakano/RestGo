@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"example.com/RestCRUD/presentation/http"
 )
 
 type post struct {
@@ -19,12 +18,9 @@ var posts = []post{
 }
 
 func main() {
-	router := gin.Default()
-	router.GET("/posts", getPosts)
+	dependencies := InjectDependencies()
+	tweetHandler := http.NewTweetHandler(dependencies.TweetDependencies.CreateTweetUseCase)
+	router := http.SetupRouter(tweetHandler)
 
 	router.Run("localhost:3000")
-}
-
-func getPosts(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, posts)
 }
