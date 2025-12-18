@@ -9,6 +9,33 @@ services:
             - "3000:3000"
         #command: go run main.go はHTTPリクエストをリッスンしたくなったら書く
         command: sleep infinity
+        depends_on:
+            db:
+                condition: service_healthy  # DBが正常に起動するまで待つ
+        networks:
+            - app_network  # 同じネットワークに参加
+    db:  # データベースのサービス
+        image: postgres:latest  # 使用するPostgreSQLのDockerイメージ
+        environment:
+            POSTGRES_USER: postgres  # PostgreSQLのユーザー名
+            POSTGRES_PASSWORD: postgres   # PostgreSQLのパスワード
+            POSTGRES_DB: restcrud  # 作成するデータベース名
+        volumes:
+            - db_data:/var/lib/postgresql  # データの永続化（PostgreSQL 18+対応）
+        networks:
+            - app_network  # 同じネットワークに参加
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        # 外部から接続したい場合は以下のコメントを外す
+        # ports:
+        #     - "5432:5432"
 
+networks:
+    app_network:
+        driver: bridge
 
-    
+volumes:
+    db_data:  # データベースのデータを永続化するためのボリューム
