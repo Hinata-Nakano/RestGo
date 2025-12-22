@@ -60,9 +60,9 @@ func (h *TweetHandler) CreateTweet(c *gin.Context) {
 // toResponse はTweetエンティティをTweetResponse DTOに変換する
 func (h *TweetHandler) toResponse(t *tweetdomain.Tweet) dto.TweetResponse {
 	return dto.TweetResponse{
-		ID:        t.ID,
+		ID:        string(t.ID),
 		UserID:    t.UserID,
-		Content:   t.Content,
+		Content:   string(t.Content),
 		CreatedAt: t.CreatedAt,
 	}
 }

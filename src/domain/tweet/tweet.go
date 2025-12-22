@@ -7,11 +7,22 @@ import (
 	"time"
 )
 
+type TweetID string
+type TweetContent string
+
+func newTweetContent(content string) TweetContent {
+	return TweetContent(content)
+}
+
+func newTweetID() TweetID {
+	return TweetID(uuid.New().String())
+}
+
 type Tweet struct {
-	ID        string
-	UserID    string
-	Content   string
-	CreatedAt string
+	ID        TweetID
+	UserID    string //ここもいずれ変更したい
+	Content   TweetContent
+	CreatedAt string //ここもいずれ変更したい。domainで形式を定義して、インフラ層でそのようにパースするような依存関係にしたい。
 }
 
 type CreateTweetRequest struct {
@@ -30,9 +41,9 @@ func NewTweet(createTweetRequest CreateTweetRequest, clock domain.Clock) (Tweet,
 	}
 
 	return Tweet{
-		ID:        uuid.New().String(),
+		ID:        newTweetID(),
 		UserID:    createTweetRequest.UserID,
-		Content:   createTweetRequest.Content,
+		Content:   newTweetContent(createTweetRequest.Content),
 		CreatedAt: clock.Now().Format(time.RFC3339),
 	}, nil
 }

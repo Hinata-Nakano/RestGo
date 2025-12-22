@@ -28,7 +28,7 @@ func TestNewTweet(t *testing.T) {
 		clock       domain.Clock
 		wantErr     error
 		wantUserID  string
-		wantContent string
+		wantContent TweetContent
 		wantTime    string
 	}{
 		{
@@ -38,7 +38,7 @@ func TestNewTweet(t *testing.T) {
 			clock:       clock,
 			wantErr:     nil,
 			wantUserID:  "user123",
-			wantContent: "Hello, World!",
+			wantContent: TweetContent("Hello, World!"),
 			wantTime:    "2025-01-01T12:00:00Z",
 		},
 		{
@@ -48,7 +48,7 @@ func TestNewTweet(t *testing.T) {
 			clock:       clock,
 			wantErr:     domain.ErrUserIDRequired,
 			wantUserID:  "",
-			wantContent: "",
+			wantContent: TweetContent(""),
 			wantTime:    "",
 		},
 		{
@@ -58,7 +58,7 @@ func TestNewTweet(t *testing.T) {
 			clock:       clock,
 			wantErr:     domain.ErrContentRequired,
 			wantUserID:  "",
-			wantContent: "",
+			wantContent: TweetContent(""),
 			wantTime:    "",
 		},
 		{
@@ -68,7 +68,7 @@ func TestNewTweet(t *testing.T) {
 			clock:       clock,
 			wantErr:     domain.ErrUserIDRequired, // 最初のバリデーションエラーが返される
 			wantUserID:  "",
-			wantContent: "",
+			wantContent: TweetContent(""),
 			wantTime:    "",
 		},
 	}
@@ -85,7 +85,7 @@ func TestNewTweet(t *testing.T) {
 
 			// 正常系の場合のみ、作成されたTweetの値をチェック
 			if tt.wantErr == nil {
-				if got.ID == "" {
+				if got.ID == TweetID("") {
 					t.Error("NewTweet() ID should not be empty")
 				}
 				if got.UserID != tt.wantUserID {
@@ -99,7 +99,7 @@ func TestNewTweet(t *testing.T) {
 				}
 			} else {
 				// 異常系の場合、Tweetは空であるべき
-				if got.ID != "" || got.UserID != "" || got.Content != "" || got.CreatedAt != "" {
+				if got.ID != TweetID("") || got.UserID != "" || got.Content != TweetContent("") || got.CreatedAt != "" {
 					t.Errorf("NewTweet() should return empty Tweet on error, got %+v", got)
 				}
 			}
